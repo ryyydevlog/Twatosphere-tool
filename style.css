@@ -48,7 +48,6 @@ header { text-align: center; padding: 28px 0 8px; }
   padding: 4px 22px;
   box-shadow: var(--shadow);
   transform: rotate(-2.5deg);
-  animation: drop .8s cubic-bezier(.3,1.6,.5,1) both; /* logo drops in once on page load */
 }
 .tagline { max-width: 34rem; margin: 22px auto 0; font-size: 1.1rem; }
 
@@ -151,8 +150,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   font-family: "Lilita One", Impact, sans-serif; line-height: 1.1;
 }
 /* Shake animation only plays when the person clicks (answers their action) */
-.ball.shake { animation: shake .5s; }
-@keyframes shake { 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
 @media (prefers-reduced-motion: reduce) { .ball.shake { animation: none; } .tool-card { transition: none; } }
 
 /* ============================================================
@@ -162,13 +159,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 
 /* Decorative emojis drifting in the background. pointer-events:none = they never block clicks */
 .floaters { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-.floaters span { position: absolute; font-size: 2.2rem; opacity: .35; animation: bob 6s ease-in-out infinite; }
-@keyframes bob { 50% { transform: translateY(-20px) rotate(12deg); } }
-@keyframes drop { from { transform: translateY(-120px) rotate(10deg); opacity: 0; } to { transform: rotate(-2.5deg); opacity: 1; } }
-@keyframes wiggle { 25% { transform: rotate(-14deg) scale(1.2); } 75% { transform: rotate(14deg) scale(1.2); } }
+.floaters span { position: absolute; font-size: 2.2rem; opacity: .35; }
 
 /* Card emoji wiggles when you hover or focus a card */
-.tool-card:hover .emoji, .tool-card:focus-visible .emoji { animation: wiggle .5s; }
 .tool-card[hidden] { display: none; }      /* cards removed by the search filter */
 
 /* Search bar: a big pill with the same chunky border as everything else */
@@ -187,8 +180,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .empty[hidden] { display: none; }
 
 /* Little emoji burst that pops out of buttons when clicked (JS creates these) */
-.pop { position: fixed; z-index: 50; pointer-events: none; font-size: 1.6rem; animation: pop .8s ease-out forwards; }
-@keyframes pop { to { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
 
 /* Extra tool bits */
 .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -214,3 +205,31 @@ a.tool-card { display: block; text-decoration: none; }
 .back:hover, .back:focus-visible { background: var(--ink); color: var(--on-ink); outline: none; }
 .logo.small { font-size: clamp(1.6rem, 6vw, 2.2rem); text-decoration: none; margin-top: 14px; }
 header.mini { text-align: center; padding: 12px 0 24px; }
+
+/* ============================================================
+   v3: CALM MOTION + NEW BITS
+   Nothing animates anymore. The "alive" look comes from static
+   tilts, colored sticker shadows, emoji and a per-tool accent color (--c).
+   ============================================================ */
+.workbench { box-shadow: 6px 6px 0 var(--c, var(--grey)); }
+.logo.small { box-shadow: 4px 4px 0 var(--c, var(--grey)); }
+.tool-card, .chip { transition: none; }
+.tool-card:hover, .tool-card:focus-visible { transform: none; box-shadow: 8px 8px 0 var(--c); }
+.chip:hover { transform: none; background: var(--ink); color: var(--on-ink); }
+.btn:hover { box-shadow: 5px 5px 0 var(--grey); }
+.btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.row .btn { margin-top: 0; }
+.result.center { display: grid; place-items: center; }
+.result.pre { white-space: pre-wrap; }
+#qr-out canvas, #qr-out img { background: #fff; padding: 14px; border-radius: 10px; }
+input[type="number"] { width: 100%; font: inherit; color: var(--ink); background: var(--card); border: 3px solid var(--ink); border-radius: 12px; padding: 10px 12px; }
+input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); }
+.opts { display: flex; flex-wrap: wrap; gap: 0 22px; }
+.opts label { display: flex; gap: 8px; align-items: center; margin: 10px 0 0; }
+.list { margin: 10px 0 0; padding-left: 22px; font-weight: 500; }
+.swatch { position: relative; align-content: center; gap: 8px; padding: 10px; }
+.swatch button { font: inherit; color: inherit; background: transparent; border: 2px solid currentColor; border-radius: 8px; padding: 0 10px; cursor: pointer; }
+.swatch button:first-child { font-family: "Lilita One", Impact, sans-serif; font-size: 1.1rem; }
+.timer { text-align: center; font-size: clamp(3.5rem, 18vw, 6rem); }
+@media (hover: none) { .search kbd { display: none; } }
