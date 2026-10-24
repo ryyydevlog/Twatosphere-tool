@@ -1,0 +1,194 @@
+/* ============================================================
+   1. DESIGN TOKENS
+   All colors live here as CSS variables. Change them once and
+   the whole site updates. The dark theme just swaps the values.
+   ============================================================ */
+:root {
+  --bg: #0a0a0a;        /* pure black page background */
+  --card: #171717;      /* card and panel surface: a step lighter than the page */
+  --ink: #f5f5f5;       /* text AND borders: soft white so they pop on black */
+  --tomato: #ff5b4a;    /* loud accent for buttons */
+  --lime: #b6f24a;      /* second accent for highlights */
+  --sun: #ffd23f;       /* third accent for the logo and tags */
+  --shadow: 5px 5px 0 var(--ink); /* hard offset shadow = the "sticker" look */
+  color-scheme: dark;
+  box-sizing: border-box;
+  /* keep content clear of phone notches and system bars */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* The site is black by default. The footer button switches to this lilac light theme. */
+:root[data-theme="light"] {
+  --bg: #cfc8ff; --card: #ffffff; --ink: #1b1340;
+  --shadow: 5px 5px 0 #1b1340; color-scheme: light;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+/* ============================================================
+   2. BASE STYLES
+   ============================================================ */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.5;
+}
+h1, h2, h3 { font-family: "Lilita One", "Arial Rounded MT Bold", Impact, sans-serif; font-weight: 400; margin: 0; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 24px 18px 60px; }
+
+/* ============================================================
+   3. HEADER: the one big "memorable" moment on the page.
+   The logo is slightly tilted, like a sticker slapped on crooked.
+   ============================================================ */
+header { text-align: center; padding: 28px 0 8px; }
+.logo {
+  display: inline-block;
+  font-size: clamp(2.6rem, 9vw, 4.6rem);
+  background: var(--sun);
+  color: #1b1340;                       /* fixed dark text: the yellow stays yellow in dark mode */
+  border: 4px solid var(--ink);
+  border-radius: 18px;
+  padding: 4px 22px;
+  box-shadow: var(--shadow);
+  transform: rotate(-2.5deg);
+  animation: drop .8s cubic-bezier(.3,1.6,.5,1) both; /* logo drops in once on page load */
+}
+.tagline { max-width: 34rem; margin: 22px auto 0; font-size: 1.1rem; }
+
+/* ============================================================
+   4. TOOL GRID
+   CSS grid: as many 210px-wide columns as fit, they stretch evenly.
+   Each card is really a <button>, so keyboard users can use it too.
+   ============================================================ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 22px;
+  margin: 34px 0;
+}
+.tool-card {
+  font: inherit; color: var(--ink); text-align: left; cursor: pointer;
+  background: var(--card);
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: transform .12s, box-shadow .12s;
+}
+/* Alternate tilts make the grid feel hand-placed (nth-child picks every 2nd / 3rd card) */
+.tool-card:nth-child(2n)  { transform: rotate(1.2deg); }
+.tool-card:nth-child(3n)  { transform: rotate(-1.2deg); }
+/* Hover/focus: card straightens and lifts a little */
+.tool-card:hover, .tool-card:focus-visible { transform: rotate(0) translate(-2px, -2px); box-shadow: 8px 8px 0 var(--ink); outline: none; }
+/* The currently open tool gets a lime background so you know where you are */
+.tool-card[aria-pressed="true"] { background: var(--lime); color: #1b1340; }
+.tool-card .emoji { font-size: 2.2rem; display: block; }
+.tool-card h3 { font-size: 1.35rem; margin-top: 6px; }
+.tool-card p { margin: 4px 0 0; font-size: .92rem; font-weight: 500; }
+
+/* ============================================================
+   5. WORKBENCH: the panel where the chosen tool appears.
+   Only one .tool-panel is visible at a time (see JavaScript).
+   ============================================================ */
+.workbench {
+  background: var(--card);
+  border: 4px solid var(--ink);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.tool-panel[hidden] { display: none; }   /* the "hidden" attribute hides inactive tools */
+.tool-panel h2 { font-size: 2rem; margin-bottom: 4px; }
+.hint { margin: 0 0 16px; font-weight: 500; }
+
+/* Form controls: chunky borders to match the cards */
+label { display: block; margin: 12px 0 4px; }
+input[type="text"], input[type="file"], select, textarea {
+  width: 100%; font: inherit; color: var(--ink); background: var(--card);
+  border: 3px solid var(--ink); border-radius: 12px; padding: 10px 12px;
+}
+textarea { min-height: 90px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+  outline: 4px solid var(--tomato); outline-offset: 2px;
+}
+.btn {
+  font: inherit; font-family: "Lilita One", Impact, sans-serif; font-size: 1.15rem;
+  color: #fff; background: var(--tomato);
+  border: 3px solid var(--ink); border-radius: 12px;
+  padding: 8px 20px; margin-top: 14px; cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.btn:active { transform: translate(3px, 3px); box-shadow: none; } /* "press down" feel */
+
+/* Result areas */
+.result {
+  margin-top: 16px; padding: 14px; min-height: 56px;
+  border: 3px dashed var(--ink); border-radius: 12px;
+  word-break: break-word;
+}
+.result img, .result canvas { max-width: 100%; height: auto; }
+.big { font-family: "Lilita One", Impact, sans-serif; font-size: 1.6rem; }
+
+/* Magic 8-ball: a simple circle with a bobbing answer */
+.ball {
+  width: 150px; height: 150px; border-radius: 50%; margin: 16px auto 0;
+  background: #1b1340; color: #fff; border: 4px solid var(--ink);
+  display: grid; place-items: center; text-align: center; padding: 18px;
+  font-family: "Lilita One", Impact, sans-serif; line-height: 1.1;
+}
+/* Shake animation only plays when the person clicks (answers their action) */
+.ball.shake { animation: shake .5s; }
+@keyframes shake { 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+@media (prefers-reduced-motion: reduce) { .ball.shake { animation: none; } .tool-card { transition: none; } }
+
+/* ============================================================
+   7. NEW: "ALIVE" STYLES (floating emojis, search, chips, effects)
+   ============================================================ */
+.wrap { position: relative; z-index: 1; }   /* keeps content above the floating emojis */
+
+/* Decorative emojis drifting in the background. pointer-events:none = they never block clicks */
+.floaters { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.floaters span { position: absolute; font-size: 2.2rem; opacity: .35; animation: bob 6s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-20px) rotate(12deg); } }
+@keyframes drop { from { transform: translateY(-120px) rotate(10deg); opacity: 0; } to { transform: rotate(-2.5deg); opacity: 1; } }
+@keyframes wiggle { 25% { transform: rotate(-14deg) scale(1.2); } 75% { transform: rotate(14deg) scale(1.2); } }
+
+/* Card emoji wiggles when you hover or focus a card */
+.tool-card:hover .emoji, .tool-card:focus-visible .emoji { animation: wiggle .5s; }
+.tool-card[hidden] { display: none; }      /* cards removed by the search filter */
+
+/* Search bar: a big pill with the same chunky border as everything else */
+.search { display: flex; align-items: center; gap: 10px; max-width: 560px; margin: 26px auto 0; padding: 4px 18px; background: var(--card); border: 4px solid var(--ink); border-radius: 999px; box-shadow: var(--shadow); }
+.search:focus-within { outline: 4px solid var(--tomato); outline-offset: 3px; }
+.search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; font-size: 1.05rem; padding: 10px 0; -webkit-appearance: none; appearance: none; }
+.search kbd { font: inherit; font-size: .85rem; border: 2px solid var(--ink); border-radius: 8px; padding: 0 8px; }
+
+/* Category chips under the search bar */
+.chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
+.chip { font: inherit; color: var(--ink); background: var(--card); border: 3px solid var(--ink); border-radius: 999px; padding: 2px 16px; cursor: pointer; }
+.chip:hover { transform: rotate(-3deg); }
+.chip[aria-pressed="true"] { background: var(--sun); color: #1b1340; box-shadow: 3px 3px 0 var(--ink); }
+.count { text-align: center; margin: 14px 0 0; font-weight: 500; }
+.empty { text-align: center; margin: 30px 0; font-size: 1.2rem; }
+.empty[hidden] { display: none; }
+
+/* Little emoji burst that pops out of buttons when clicked (JS creates these) */
+.pop { position: fixed; z-index: 50; pointer-events: none; font-size: 1.6rem; animation: pop .8s ease-out forwards; }
+@keyframes pop { to { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
+
+/* Extra tool bits */
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch { flex: 1 1 100px; min-height: 90px; border: 3px solid var(--ink); border-radius: 12px; display: grid; place-items: center; font-family: "Lilita One", Impact, sans-serif; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
+.stat { border: 3px solid var(--ink); border-radius: 12px; padding: 8px; text-align: center; }
+.stat b { display: block; font-family: "Lilita One", Impact, sans-serif; font-size: 1.8rem; font-weight: 400; }
+input[type="range"] { width: 100%; accent-color: var(--tomato); }
+
+/* Respect people who turn animations off in their system settings */
+@media (prefers-reduced-motion: reduce) { .floaters span, .logo, .tool-card:hover .emoji, .pop { animation: none; } }
+
+footer { text-align: center; margin-top: 40px; font-weight: 500; }
+.theme-toggle { font: inherit; color: var(--ink); background: var(--card); border: 3px solid var(--ink); border-radius: 999px; padding: 4px 14px; cursor: pointer; margin-top: 10px; }

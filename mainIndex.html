@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <!-- viewport-fit=cover lets the page draw edge to edge on phones; safe-area padding below keeps text clear of notches -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Twatos Tools: silly tools that actually work</title>
+
+  <!-- Two Google Fonts: a chunky one for headings, a friendly one for body text.
+     Every font has a fallback stack, so the page still looks fine if fonts fail to load. -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="mainStyle.css">
+
+  <!-- QR code library (pinned version, loaded from an allowed host). Used only by the QR tool. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+</head>
+<body>
+  <!-- Background decoration. aria-hidden hides it from screen readers because it carries no meaning -->
+  <div class="floaters" aria-hidden="true">
+    <span style="left:6%;top:18%">🧩</span>
+    <span style="left:88%;top:12%;animation-delay:-2s">🎲</span>
+    <span style="left:78%;top:70%;animation-delay:-4s">✨</span>
+    <span style="left:10%;top:76%;animation-delay:-1s">🔧</span>
+    <span style="left:50%;top:92%;animation-delay:-3s">🍕</span>
+  </div>
+  <div class="wrap">
+
+    <!-- ===== HEADER ===== -->
+    <header>
+      <div class="logo">Twatos Tools</div>
+      <p class="tagline">A heap of small, slightly silly tools. Pick one, use it, forget we existed.</p>
+    </header>
+
+    <!-- ===== SEARCH + CATEGORY CHIPS =====
+       type="search" gives phones a proper search keyboard. JavaScript filters the cards as you type. -->
+    <div class="search" role="search">
+      <span aria-hidden="true">🔍</span>
+      <input type="search" id="search" placeholder="Search tools: try “color” or “password”" aria-label="Search tools"
+        autocomplete="off">
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+    <div class="chips" id="chips">
+      <button class="chip" data-cat="all" aria-pressed="true">All</button>
+      <button class="chip" data-cat="make" aria-pressed="false">Make</button>
+      <button class="chip" data-cat="convert" aria-pressed="false">Convert</button>
+      <button class="chip" data-cat="fun" aria-pressed="false">Just for fun</button>
+    </div>
+    <p class="count" id="count" aria-live="polite"></p>
+
+    <!-- ===== TOOL GRID =====
+       Each button has data-tool="something". That value must match the
+       id of a panel below ("panel-something"). JavaScript links them. -->
+    <nav class="grid" aria-label="Tools">
+      <button class="tool-card" data-tool="qr"><span class="emoji">🔳</span>
+        <h3>QR Maker</h3>
+        <p>Turn any text or link into a scannable square.</p>
+      </button>
+      <button class="tool-card" data-tool="img"><span class="emoji">🖼️</span>
+        <h3>Image Flipper</h3>
+        <p>Convert PNG, JPG and WebP without uploading anywhere.</p>
+      </button>
+      <button class="tool-card" data-tool="mock"><span class="emoji">🧽</span>
+        <h3>Mocking Text</h3>
+        <p>tUrN tExT iNtO sArCaStIc cAsE.</p>
+      </button>
+      <button class="tool-card" data-tool="ball"><span class="emoji">🎱</span>
+        <h3>Fate Ball</h3>
+        <p>Ask a yes or no question. Receive confident nonsense.</p>
+      </button>
+      <button class="tool-card" data-tool="excuse"><span class="emoji">🐕</span>
+        <h3>Excuse Machine</h3>
+        <p>A believable reason for being late. Believable-ish.</p>
+      </button>
+      <!-- NEW cards. Same pattern: data-tool must match a panel id below. -->
+      <button class="tool-card" data-tool="pass"><span class="emoji">🔐</span>
+        <h3>Password Blender</h3>
+        <p>Strong random passwords, made on your device.</p>
+      </button>
+      <button class="tool-card" data-tool="dice"><span class="emoji">🎲</span>
+        <h3>Dice Tumbler</h3>
+        <p>Roll one to six dice and get the total.</p>
+      </button>
+      <button class="tool-card" data-tool="palette"><span class="emoji">🎨</span>
+        <h3>Palette Roulette</h3>
+        <p>Five random colors with hex codes.</p>
+      </button>
+      <button class="tool-card" data-tool="words"><span class="emoji">📏</span>
+        <h3>Word Counter</h3>
+        <p>Words, letters, sentences and reading time.</p>
+      </button>
+    </nav>
+
+    <!-- Shown only when the search finds nothing: tells the person what to do next -->
+    <p class="empty" id="empty" hidden>🫥 No tool matches that. Clear the search or try a shorter word.</p>
+
+    <!-- ===== WORKBENCH: one panel per tool ===== -->
+    <main class="workbench" id="bench" tabindex="-1">
+
+      <!-- Starting state: tells the person what to do next -->
+      <section class="tool-panel" id="panel-welcome">
+        <h2>Pick a tool above</h2>
+        <p class="hint">Everything runs in your browser, so nothing you type or drop in here gets sent anywhere.</p>
+      </section>
+
+      <!-- TOOL 1: QR code -->
+      <section class="tool-panel" id="panel-qr" hidden>
+        <h2>QR Maker</h2>
+        <p class="hint">Type a link or any text, then press the button.</p>
+        <label for="qr-text">Text or link</label>
+        <input type="text" id="qr-text" value="https://example.com">
+        <button class="btn" id="qr-go">Make my QR</button>
+        <!-- The library draws the QR code inside this box -->
+        <div class="result" id="qr-out" style="display:grid;place-items:center">Your QR code shows up here.</div>
+      </section>
+
+      <!-- TOOL 2: image converter (uses the browser's built-in canvas, no library needed) -->
+      <section class="tool-panel" id="panel-img" hidden>
+        <h2>Image Flipper</h2>
+        <p class="hint">Pick an image and a format. Then save the result with a right-click (or long-press on a phone).
+        </p>
+        <label for="img-file">Image file</label>
+        <input type="file" id="img-file" accept="image/*">
+        <label for="img-fmt">Convert to</label>
+        <select id="img-fmt">
+          <option value="image/png">PNG</option>
+          <option value="image/jpeg">JPG</option>
+          <option value="image/webp">WebP</option>
+        </select>
+        <button class="btn" id="img-go">Convert</button>
+        <div class="result" id="img-out">Your converted image shows up here.</div>
+      </section>
+
+      <!-- TOOL 3: mocking text -->
+      <section class="tool-panel" id="panel-mock" hidden>
+        <h2>Mocking Text</h2>
+        <p class="hint">Type anything. The result updates as you go.</p>
+        <label for="mock-in">Your text</label>
+        <textarea id="mock-in">I am definitely not being sarcastic</textarea>
+        <div class="result big" id="mock-out"></div>
+      </section>
+
+      <!-- TOOL 4: magic 8-ball style answers -->
+      <section class="tool-panel" id="panel-ball" hidden>
+        <h2>Fate Ball</h2>
+        <p class="hint">Think of a yes or no question, then press the button.</p>
+        <button class="btn" id="ball-go">Shake it</button>
+        <div class="ball" id="ball-out">Ask me</div>
+      </section>
+
+      <!-- TOOL 5: random excuse -->
+      <section class="tool-panel" id="panel-excuse" hidden>
+        <h2>Excuse Machine</h2>
+        <p class="hint">For when you are late and honesty feels risky.</p>
+        <button class="btn" id="excuse-go">Give me an excuse</button>
+        <div class="result big" id="excuse-out">Press the button.</div>
+      </section>
+      <!-- NEW TOOL: password generator. Uses crypto.getRandomValues, which is safer than Math.random -->
+      <section class="tool-panel" id="panel-pass" hidden>
+        <h2>Password Blender</h2>
+        <p class="hint">Slide to pick a length, then blend.</p>
+        <label for="pass-len">Length: <span id="pass-len-val">16</span></label>
+        <input type="range" id="pass-len" min="8" max="40" value="16">
+        <button class="btn" id="pass-go">Blend a password</button>
+        <button class="btn" id="pass-copy" style="background:var(--lime);color:#1b1340">Copy</button>
+        <div class="result big" id="pass-out" style="font-family:monospace">Press the button.</div>
+      </section>
+
+      <!-- NEW TOOL: dice -->
+      <section class="tool-panel" id="panel-dice" hidden>
+        <h2>Dice Tumbler</h2>
+        <p class="hint">Choose how many dice, then roll.</p>
+        <label for="dice-n">Number of dice</label>
+        <select id="dice-n">
+          <option>1</option>
+          <option selected>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+        </select>
+        <button class="btn" id="dice-go">Roll</button>
+        <div class="result big" id="dice-out" style="font-size:3rem">🎲</div>
+        <p class="big" id="dice-total"></p>
+      </section>
+
+      <!-- NEW TOOL: palette -->
+      <section class="tool-panel" id="panel-palette" hidden>
+        <h2>Palette Roulette</h2>
+        <p class="hint">Spin until something looks good, then copy the hex codes.</p>
+        <button class="btn" id="palette-go">Spin</button>
+        <div class="swatches" id="palette-out" style="margin-top:16px"></div>
+      </section>
+
+      <!-- NEW TOOL: word counter -->
+      <section class="tool-panel" id="panel-words" hidden>
+        <h2>Word Counter</h2>
+        <p class="hint">Paste or type below. The numbers update live.</p>
+        <label for="words-in">Your text</label>
+        <textarea id="words-in" placeholder="Start typing here..."></textarea>
+        <div class="stats" id="words-out"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Mockup built with love.</p>
+      <button class="theme-toggle" id="theme-btn">Switch light and dark</button>
+    </footer>
+  </div>
+  <script src="mainJS.js"></script>
+</body>
+
+</html>
