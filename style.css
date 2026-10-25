@@ -234,3 +234,27 @@ input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); }
 .timer { text-align: center; font-size: clamp(3.5rem, 18vw, 6rem); }
 @media (hover: none) { .search kbd { display: none; } }
 
+
+/* ============================================================
+   v4: GENTLE BACKGROUND MOTION
+   1) the floating emojis slowly drift and tilt
+   2) a faint dot grid scrolls diagonally behind everything
+   Both are slow, low-contrast and switched off for people who
+   prefer reduced motion (rule at the very bottom).
+   ============================================================ */
+@keyframes drift {
+  0%   { transform: translate(0, 0) rotate(-6deg); }
+  50%  { transform: translate(16px, -28px) rotate(6deg); }
+  100% { transform: translate(0, 0) rotate(-6deg); }
+}
+@keyframes dots { to { background-position: 44px 44px; } }
+.floaters span { animation: drift 9s ease-in-out infinite; will-change: transform; }
+.floaters::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, .13) 1.5px, transparent 1.6px);
+  background-size: 44px 44px;
+  animation: dots 30s linear infinite;
+}
+/* Live-data tools: small bits */
+.result ol.list { padding-left: 24px; }
+@media (prefers-reduced-motion: reduce) { .floaters span, .floaters::before { animation: none; } }

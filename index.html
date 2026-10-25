@@ -18,6 +18,10 @@
     <span style="left:78%;top:70%;animation-delay:-4s">✨</span>
     <span style="left:10%;top:76%;animation-delay:-1s">🔧</span>
     <span style="left:50%;top:92%;animation-delay:-3s">🍕</span>
+    <span style="left:30%;top:8%;animation-delay:-5s;animation-duration:12s">🌍</span>
+    <span style="left:92%;top:42%;animation-delay:-6s;animation-duration:10s">⛅</span>
+    <span style="left:3%;top:48%;animation-delay:-7s;animation-duration:13s">💱</span>
+    <span style="left:66%;top:88%;animation-delay:-2.5s;animation-duration:11s">🐶</span>
   </div>
   <div class="wrap">
 
@@ -37,6 +41,7 @@
         <button class="chip" data-cat="make" aria-pressed="false">Make</button>
         <button class="chip" data-cat="convert" aria-pressed="false">Convert</button>
         <button class="chip" data-cat="fun" aria-pressed="false">Just for fun</button>
+        <button class="chip" data-cat="api" aria-pressed="false">Live data</button>
       </div>
       <p class="count" id="count" aria-live="polite"></p>
       <nav class="grid" id="grid" aria-label="Tools"></nav>
@@ -52,13 +57,14 @@
       <main class="workbench" id="bench" tabindex="-1"></main>
     </div>
 
-    <footer><p>Everything runs in your browser. Nothing you type gets sent anywhere.</p></footer>
+    <footer><p>Most tools run entirely in your browser. The <b>Live data</b> tools send what you search for (a city, currency, word, country) to free public services: Open-Meteo, Frankfurter, Free Dictionary API, REST Countries and Dog CEO.</p></footer>
   </div>
 
   <!-- Tools first, core last (core reads the tools the other files registered) -->
   <script src="tools-make.js"></script>
   <script src="tools-convert.js"></script>
   <script src="tools-fun.js"></script>
+  <script src="tools-api.js"></script>
   <script src="core.js"></script>
 </body>
 </html>
