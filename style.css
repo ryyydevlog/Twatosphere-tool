@@ -1,260 +1,267 @@
-/* ============================================================
-   1. DESIGN TOKENS
-   All colors live here as CSS variables. Change them once and
-   the whole site updates. The site is strictly black and white.
-   ============================================================ */
 :root {
-  --bg: #000000;        /* pure black page background */
-  --card: #0f0f0f;      /* cards and panels: barely lighter than the page */
-  --ink: #ffffff;       /* text, borders and filled buttons: pure white */
-  --on-ink: #000000;    /* text that sits ON a white surface (buttons, selected card) */
-  --grey: #7a7a7a;      /* the only other tone: hard sticker shadows */
-  --shadow: 5px 5px 0 var(--grey); /* hard offset shadow = the "sticker" look */
-  color-scheme: dark;
+  --paper: #ece2c8;
+  --paper-soft: #e2d5b4;
+  --receipt: #fbf6e8;
+  --ink: #23271f;
+  --ink-soft: #585c4e;
+  --line: rgba(35, 39, 31, .16);
+
+  --make: #b2502a;
+  --convert: #3c6e91;
+  --fun: #9c3d63;
+  --live: #3f7d5c;
+
+  --shadow: 0 1px 2px rgba(23, 20, 10, .18), 0 10px 18px -12px rgba(23, 20, 10, .45);
+  --shadow-soft: 0 1px 2px rgba(23, 20, 10, .14), 0 6px 14px -10px rgba(23, 20, 10, .35);
+
+  color-scheme: light;
   box-sizing: border-box;
-  /* keep content clear of phone notches and system bars */
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 html { scroll-padding-top: env(safe-area-inset-top, 0px); }
-
-/* ============================================================
-   2. BASE STYLES
-   ============================================================ */
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--paper);
   color: var(--ink);
-  font-family: "Nunito", system-ui, sans-serif;
-  font-weight: 700;
-  line-height: 1.5;
+  font-family: "Work Sans", system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.55;
 }
-h1, h2, h3 { font-family: "Lilita One", "Arial Rounded MT Bold", Impact, sans-serif; font-weight: 400; margin: 0; }
-.wrap { max-width: 980px; margin: 0 auto; padding: 24px 18px 60px; }
 
-/* ============================================================
-   3. HEADER: the one big "memorable" moment on the page.
-   The logo is slightly tilted, like a sticker slapped on crooked.
-   ============================================================ */
-header { text-align: center; padding: 28px 0 8px; }
+/* grain, so the kraft tone doesn't read as a flat css color */
+body::after {
+  content: "";
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  opacity: .5; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.035 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+h1, h2, h3 {
+  font-family: "Big Shoulders Display", Impact, sans-serif;
+  font-weight: 800;
+  letter-spacing: .01em;
+  margin: 0;
+}
+.wrap { max-width: 980px; margin: 0 auto; padding: 24px 18px 60px; position: relative; z-index: 1; }
+
+header { text-align: center; padding: 30px 0 6px; }
 .logo {
+  position: relative;
   display: inline-block;
-  font-size: clamp(2.6rem, 9vw, 4.6rem);
-  background: var(--ink);
-  color: var(--on-ink);               /* black text on the white sticker */
-  border: 4px solid var(--ink);
-  border-radius: 18px;
-  padding: 4px 22px;
+  font-size: clamp(2.3rem, 8vw, 3.9rem);
+  background: var(--paper-soft);
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 10px 30px 10px 42px;
   box-shadow: var(--shadow);
-  transform: rotate(-2.5deg);
+  transform: rotate(-1deg);
 }
-.tagline { max-width: 34rem; margin: 22px auto 0; font-size: 1.1rem; }
+.logo::before {
+  content: "";
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--paper); border: 2.5px solid var(--ink);
+}
+.tagline { max-width: 32rem; margin: 20px auto 0; font-size: 1.05rem; color: var(--ink-soft); }
 
-/* ============================================================
-   4. TOOL GRID
-   CSS grid: as many 210px-wide columns as fit, they stretch evenly.
-   Each card is really a <button>, so keyboard users can use it too.
-   ============================================================ */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 22px;
+  gap: 20px;
   margin: 34px 0;
 }
 .tool-card {
+  position: relative;
   font: inherit; color: var(--ink); text-align: left; cursor: pointer;
-  background: var(--card);
-  border: 3px solid var(--ink);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 5px 5px 0 var(--c);   /* colored sticker shadow, color comes from --c */
-  transition: transform .12s, box-shadow .12s;
+  background: var(--paper-soft);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 18px 16px 16px 26px;
+  box-shadow: var(--shadow-soft);
 }
-/* Alternate tilts make the grid feel hand-placed (nth-child picks every 2nd / 3rd card) */
-.tool-card:nth-child(2n)  { transform: rotate(1.2deg); }
-.tool-card:nth-child(3n)  { transform: rotate(-1.2deg); }
-/* Hover/focus: card straightens and lifts a little */
-.tool-card:hover, .tool-card:focus-visible { transform: rotate(0) translate(-2px, -2px); box-shadow: 8px 8px 0 var(--c); outline: none; }
-/* The currently open tool gets a white background so you know where you are */
-.tool-card[aria-pressed="true"] { background: var(--c); color: var(--on-ink); }
-.tool-card[aria-pressed="true"] .emoji { background: #ffffff; }
-/* Emoji sits on a colored tile. transparent text + black text-shadow turns the emoji into a black silhouette */
+.tool-card::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0; width: 9px;
+  background: var(--c); border-right: 2px solid var(--ink);
+  border-radius: 6px 0 0 6px;
+}
+.tool-card::after {
+  content: "";
+  position: absolute; left: 1px; top: 16px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--paper); border: 1.5px solid var(--ink);
+}
+.tool-card:nth-child(3n+1) { transform: rotate(-.5deg); }
+.tool-card:nth-child(3n+2) { transform: rotate(.4deg); }
+.tool-card:nth-child(3n)   { transform: rotate(-.2deg); }
+.tool-card:hover, .tool-card:focus-visible { transform: rotate(0); box-shadow: var(--shadow); outline: none; }
+.tool-card[aria-pressed="true"] { background: var(--receipt); border-color: var(--c); }
+
+.tool-card.cat-make    { --c: var(--make); }
+.tool-card.cat-convert { --c: var(--convert); }
+.tool-card.cat-fun     { --c: var(--fun); }
+.tool-card.cat-api     { --c: var(--live); }
+
 .tool-card .emoji {
-  display: grid; place-items: center; width: 56px; height: 56px;
-  font-size: 1.8rem; background: var(--c);
-  border: 3px solid var(--ink); border-radius: 14px;
-  /* color: transparent; text-shadow: 0 0 0 #000;   <- delete these two lines */
+  display: grid; place-items: center; width: 46px; height: 46px;
+  font-size: 1.55rem; background: var(--paper);
+  border: 2px solid var(--ink); border-radius: 8px;
 }
+.tool-card[aria-pressed="true"] .emoji { background: var(--c); }
+.tool-card h3 { font-size: 1.3rem; margin-top: 10px; }
+.tool-card p { margin: 4px 0 0; font-size: .9rem; color: var(--ink-soft); font-weight: 500; }
 
-/* Accent colors: 6 bright tones that repeat across the cards (nth-child counts position, so colors never shuffle while filtering) */
-.tool-card:nth-child(6n+1) { --c: #ff4d8d; } /* pink */
-.tool-card:nth-child(6n+2) { --c: #ffd23f; } /* yellow */
-.tool-card:nth-child(6n+3) { --c: #3ddc97; } /* mint */
-.tool-card:nth-child(6n+4) { --c: #4cc9f0; } /* sky */
-.tool-card:nth-child(6n+5) { --c: #ff8a3d; } /* orange */
-.tool-card:nth-child(6n)   { --c: #a78bfa; } /* violet */
-.tool-card h3 { font-size: 1.35rem; margin-top: 6px; }
-.tool-card p { margin: 4px 0 0; font-size: .92rem; font-weight: 500; }
-
-/* ============================================================
-   5. WORKBENCH: the panel where the chosen tool appears.
-   Only one .tool-panel is visible at a time (see JavaScript).
-   ============================================================ */
 .workbench {
-  background: var(--card);
-  border: 4px solid var(--ink);
-  border-radius: 20px;
+  position: relative;
+  background: var(--paper-soft);
+  border: 2.5px solid var(--ink);
+  border-radius: 10px 10px 4px 4px;
+  border-bottom: 7px solid var(--c, var(--ink));
   box-shadow: var(--shadow);
-  padding: 24px;
+  padding: 30px 24px 24px;
 }
-.tool-panel[hidden] { display: none; }   /* the "hidden" attribute hides inactive tools */
-.tool-panel h2 { font-size: 2rem; margin-bottom: 4px; }
-.hint { margin: 0 0 16px; font-weight: 500; }
+.workbench::before {
+  content: var(--emoji, "🔧");
+  position: absolute; top: -22px; left: 26px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--c, var(--paper-soft)); border: 2.5px solid var(--ink);
+  display: grid; place-items: center; font-size: 1.3rem; line-height: 1;
+}
+.tool-panel[hidden] { display: none; }
+.tool-panel h2 { font-size: 1.9rem; margin-bottom: 4px; }
+.hint { margin: 0 0 16px; color: var(--ink-soft); font-weight: 500; }
 
-/* Form controls: chunky borders to match the cards */
-label { display: block; margin: 12px 0 4px; }
-input[type="text"], input[type="file"], select, textarea {
-  width: 100%; font: inherit; color: var(--ink); background: var(--card);
-  border: 3px solid var(--ink); border-radius: 12px; padding: 10px 12px;
+label { display: block; margin: 12px 0 4px; font-weight: 600; }
+input[type="text"], input[type="file"], input[type="number"], select, textarea {
+  width: 100%; font: inherit; color: var(--ink); background: var(--receipt);
+  border: 2px solid var(--ink); border-radius: 6px; padding: 10px 12px;
 }
 textarea { min-height: 90px; resize: vertical; }
 input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
-  outline: 4px solid var(--ink); outline-offset: 2px;
+  outline: 3px solid var(--convert); outline-offset: 2px;
 }
+input[type="checkbox"] { width: 19px; height: 19px; accent-color: var(--convert); }
+input[type="range"] { width: 100%; accent-color: var(--convert); }
+
 .btn {
-  font: inherit; font-family: "Lilita One", Impact, sans-serif; font-size: 1.15rem;
-  color: var(--on-ink); background: var(--ink);
-  border: 3px solid var(--ink); border-radius: 12px;
+  font: inherit; font-family: "Big Shoulders Display", Impact, sans-serif; font-weight: 700;
+  font-size: 1.1rem; letter-spacing: .01em;
+  color: var(--paper); background: var(--ink);
+  border: 2px solid var(--ink); border-radius: 6px;
   padding: 8px 20px; margin-top: 14px; cursor: pointer;
-  box-shadow: 3px 3px 0 var(--grey);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.25);
 }
-.btn:active { transform: translate(3px, 3px); box-shadow: none; } /* "press down" feel */
-/* Outlined button for secondary actions (like Copy) */
-.btn.alt { background: transparent; color: var(--ink); }
-
-/* Result areas */
-.result {
-  margin-top: 16px; padding: 14px; min-height: 56px;
-  border: 3px dashed var(--ink); border-radius: 12px;
-  word-break: break-word;
-}
-.result img, .result canvas { max-width: 100%; height: auto; }
-.big { font-family: "Lilita One", Impact, sans-serif; font-size: 1.6rem; }
-
-/* Magic 8-ball: a simple circle with a bobbing answer */
-.ball {
-  width: 150px; height: 150px; border-radius: 50%; margin: 16px auto 0;
-  background: #000000; color: #fff; border: 4px solid var(--ink);
-  display: grid; place-items: center; text-align: center; padding: 18px;
-  font-family: "Lilita One", Impact, sans-serif; line-height: 1.1;
-}
-/* Shake animation only plays when the person clicks (answers their action) */
-@media (prefers-reduced-motion: reduce) { .ball.shake { animation: none; } .tool-card { transition: none; } }
-
-/* ============================================================
-   7. NEW: "ALIVE" STYLES (floating emojis, search, chips, effects)
-   ============================================================ */
-.wrap { position: relative; z-index: 1; }   /* keeps content above the floating emojis */
-
-/* Decorative emojis drifting in the background. pointer-events:none = they never block clicks */
-.floaters { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-.floaters span { position: absolute; font-size: 2.2rem; opacity: .35; }
-
-/* Card emoji wiggles when you hover or focus a card */
-.tool-card[hidden] { display: none; }      /* cards removed by the search filter */
-
-/* Search bar: a big pill with the same chunky border as everything else */
-.search { display: flex; align-items: center; gap: 10px; max-width: 560px; margin: 26px auto 0; padding: 4px 18px; background: var(--card); border: 4px solid var(--ink); border-radius: 999px; box-shadow: var(--shadow); }
-.search:focus-within { outline: 4px solid var(--ink); outline-offset: 3px; }
-.search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; font-size: 1.05rem; padding: 10px 0; -webkit-appearance: none; appearance: none; }
-.search kbd { font: inherit; font-size: .85rem; border: 2px solid var(--ink); border-radius: 8px; padding: 0 8px; }
-
-/* Category chips under the search bar */
-.chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
-.chip { font: inherit; color: var(--ink); background: var(--card); border: 3px solid var(--ink); border-radius: 999px; padding: 2px 16px; cursor: pointer; }
-.chip:hover { transform: rotate(-3deg); }
-.chip[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); box-shadow: 3px 3px 0 var(--grey); }
-.count { text-align: center; margin: 14px 0 0; font-weight: 500; }
-.empty { text-align: center; margin: 30px 0; font-size: 1.2rem; }
-.empty[hidden] { display: none; }
-
-/* Little emoji burst that pops out of buttons when clicked (JS creates these) */
-
-/* Extra tool bits */
-.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
-.swatch { flex: 1 1 100px; min-height: 90px; border: 3px solid var(--ink); border-radius: 12px; display: grid; place-items: center; font-family: "Lilita One", Impact, sans-serif; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
-.stat { border: 3px solid var(--ink); border-radius: 12px; padding: 8px; text-align: center; }
-.stat b { display: block; font-family: "Lilita One", Impact, sans-serif; font-size: 1.8rem; font-weight: 400; }
-input[type="range"] { width: 100%; accent-color: var(--ink); }
-
-/* Respect people who turn animations off in their system settings */
-@media (prefers-reduced-motion: reduce) { .floaters span, .logo, .tool-card:hover .emoji, .pop { animation: none; } }
-
-/* Background, burst and empty-state emojis stay black and white (card emojis are silhouettes on colored tiles) */
-.floaters span, .pop, .empty { filter: grayscale(1); }
-
-footer { text-align: center; margin-top: 40px; font-weight: 500; }
-/* ============================================================
-   MULTI-PAGE ADDITIONS
-   Cards are now links (<a>), and tool pages get a back link.
-   ============================================================ */
-a.tool-card { display: block; text-decoration: none; }
-.back { display: inline-block; margin-top: 8px; color: var(--ink); font-family: "Lilita One", Impact, sans-serif; font-size: 1.15rem; text-decoration: none; border: 3px solid var(--ink); border-radius: 999px; padding: 2px 16px; background: var(--card); }
-.back:hover, .back:focus-visible { background: var(--ink); color: var(--on-ink); outline: none; }
-.logo.small { font-size: clamp(1.6rem, 6vw, 2.2rem); text-decoration: none; margin-top: 14px; }
-header.mini { text-align: center; padding: 12px 0 24px; }
-
-/* ============================================================
-   v3: CALM MOTION + NEW BITS
-   Nothing animates anymore. The "alive" look comes from static
-   tilts, colored sticker shadows, emoji and a per-tool accent color (--c).
-   ============================================================ */
-.workbench { box-shadow: 6px 6px 0 var(--c, var(--grey)); }
-.logo.small { box-shadow: 4px 4px 0 var(--c, var(--grey)); }
-.tool-card, .chip { transition: none; }
-.tool-card:hover, .tool-card:focus-visible { transform: none; box-shadow: 8px 8px 0 var(--c); }
-.chip:hover { transform: none; background: var(--ink); color: var(--on-ink); }
-.btn:hover { box-shadow: 5px 5px 0 var(--grey); }
-.btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+.btn:active { box-shadow: inset 0 2px 4px rgba(0,0,0,.4); transform: translateY(1px); }
+.btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.btn.alt { background: transparent; color: var(--ink); box-shadow: none; }
+.btn.alt:active { background: var(--line); }
 .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .row .btn { margin-top: 0; }
+
+.result {
+  position: relative;
+  margin-top: 22px; padding: 18px 16px 14px;
+  background: var(--receipt); color: var(--ink);
+  border: 2px solid var(--ink); border-top: none;
+  border-radius: 0 0 6px 6px;
+  min-height: 56px; word-break: break-word;
+  font-family: "IBM Plex Mono", monospace; font-size: .95rem;
+}
+.result::before {
+  content: ""; position: absolute; top: -9px; left: -2px; right: -2px; height: 9px;
+  background-image:
+    linear-gradient(135deg, var(--receipt) 50%, transparent 50%),
+    linear-gradient(45deg, var(--receipt) 50%, transparent 50%);
+  background-size: 16px 16px; background-position: 0 100%;
+  background-repeat: repeat-x;
+  filter: drop-shadow(0 -2px 0 var(--ink));
+}
+.result img, .result canvas { max-width: 100%; height: auto; }
 .result.center { display: grid; place-items: center; }
 .result.pre { white-space: pre-wrap; }
-#qr-out canvas, #qr-out img { background: #fff; padding: 14px; border-radius: 10px; }
-input[type="number"] { width: 100%; font: inherit; color: var(--ink); background: var(--card); border: 3px solid var(--ink); border-radius: 12px; padding: 10px 12px; }
-input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ink); }
-.opts { display: flex; flex-wrap: wrap; gap: 0 22px; }
-.opts label { display: flex; gap: 8px; align-items: center; margin: 10px 0 0; }
-.list { margin: 10px 0 0; padding-left: 22px; font-weight: 500; }
-.swatch { position: relative; align-content: center; gap: 8px; padding: 10px; }
-.swatch button { font: inherit; color: inherit; background: transparent; border: 2px solid currentColor; border-radius: 8px; padding: 0 10px; cursor: pointer; }
-.swatch button:first-child { font-family: "Lilita One", Impact, sans-serif; font-size: 1.1rem; }
-.timer { text-align: center; font-size: clamp(3.5rem, 18vw, 6rem); }
+.big { font-family: "Big Shoulders Display", Impact, sans-serif; font-size: 1.5rem; font-weight: 700; }
+
+.ball {
+  width: 148px; height: 148px; border-radius: 50%; margin: 18px auto 0;
+  background: var(--ink); color: var(--paper); border: 3px solid var(--ink);
+  display: grid; place-items: center; text-align: center; padding: 18px;
+  font-family: "Big Shoulders Display", Impact, sans-serif; font-weight: 700; line-height: 1.15;
+  box-shadow: var(--shadow-soft);
+}
+@media (prefers-reduced-motion: reduce) { .ball.shake { animation: none; } }
+
+.floaters { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; opacity: .5; }
+.floaters span { position: absolute; font-size: 1.5rem; opacity: .14; filter: grayscale(1); }
+.tool-card[hidden] { display: none; }
+
+.search {
+  display: flex; align-items: center; gap: 10px; max-width: 560px;
+  margin: 28px auto 0; padding: 4px 16px;
+  background: var(--receipt); border: 2.5px solid var(--ink); border-radius: 6px;
+  box-shadow: var(--shadow-soft);
+}
+.search:focus-within { outline: 3px solid var(--convert); outline-offset: 2px; }
+.search input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink);
+  font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 1rem; padding: 11px 0;
+  -webkit-appearance: none; appearance: none;
+}
+.search kbd {
+  font: inherit; font-family: "IBM Plex Mono", monospace; font-size: .8rem;
+  border: 2px solid var(--ink); border-radius: 5px; padding: 0 7px; color: var(--ink-soft);
+}
 @media (hover: none) { .search kbd { display: none; } }
 
+.chips { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin-top: 16px; }
+.chip {
+  font: inherit; font-weight: 600; color: var(--ink); background: var(--paper-soft);
+  border: 2px solid var(--ink); border-radius: 6px; padding: 3px 15px; cursor: pointer;
+}
+.chip[data-cat="make"]    { border-color: var(--make); }
+.chip[data-cat="convert"] { border-color: var(--convert); }
+.chip[data-cat="fun"]     { border-color: var(--fun); }
+.chip[data-cat="api"]     { border-color: var(--live); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip[data-cat="make"][aria-pressed="true"]    { background: var(--make); }
+.chip[data-cat="convert"][aria-pressed="true"] { background: var(--convert); }
+.chip[data-cat="fun"][aria-pressed="true"]     { background: var(--fun); }
+.chip[data-cat="api"][aria-pressed="true"]     { background: var(--live); }
 
-/* ============================================================
-   v4: GENTLE BACKGROUND MOTION
-   1) the floating emojis slowly drift and tilt
-   2) a faint dot grid scrolls diagonally behind everything
-   Both are slow, low-contrast and switched off for people who
-   prefer reduced motion (rule at the very bottom).
-   ============================================================ */
-@keyframes drift {
-  0%   { transform: translate(0, 0) rotate(-6deg); }
-  50%  { transform: translate(16px, -28px) rotate(6deg); }
-  100% { transform: translate(0, 0) rotate(-6deg); }
+.count { text-align: center; margin: 14px 0 0; color: var(--ink-soft); font-weight: 500; }
+.empty { text-align: center; margin: 30px 0; font-size: 1.1rem; color: var(--ink-soft); }
+.empty[hidden] { display: none; }
+
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch { position: relative; flex: 1 1 100px; min-height: 90px; border: 2px solid var(--ink); border-radius: 8px; display: grid; align-content: center; gap: 8px; padding: 10px; font-family: "Big Shoulders Display", Impact, sans-serif; }
+.swatch button { font: inherit; color: inherit; background: transparent; border: 2px solid currentColor; border-radius: 6px; padding: 0 10px; cursor: pointer; }
+.swatch button:first-child { font-family: "IBM Plex Mono", monospace; font-size: 1rem; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
+.stat { border: 2px solid var(--ink); border-radius: 8px; padding: 8px; text-align: center; background: var(--paper-soft); }
+.stat b { display: block; font-family: "Big Shoulders Display", Impact, sans-serif; font-size: 1.7rem; font-weight: 800; }
+
+.opts { display: flex; flex-wrap: wrap; gap: 0 22px; }
+.opts label { display: flex; gap: 8px; align-items: center; margin: 10px 0 0; font-weight: 500; }
+.list { margin: 10px 0 0; padding-left: 20px; color: var(--ink-soft); font-weight: 500; }
+ol.list { padding-left: 24px; }
+
+.timer { text-align: center; font-size: clamp(3.3rem, 17vw, 5.6rem); font-family: "Big Shoulders Display", Impact, sans-serif; }
+
+#qr-out canvas, #qr-out img { background: #fff; padding: 12px; border-radius: 6px; border: 2px solid var(--ink); }
+
+a.tool-card { display: block; text-decoration: none; }
+.back {
+  display: inline-block; margin-top: 8px; color: var(--ink);
+  font-family: "Big Shoulders Display", Impact, sans-serif; font-weight: 700; font-size: 1.1rem;
+  text-decoration: none; border: 2px solid var(--ink); border-radius: 6px;
+  padding: 3px 14px; background: var(--paper-soft);
 }
-@keyframes dots { to { background-position: 44px 44px; } }
-.floaters span { animation: drift 9s ease-in-out infinite; will-change: transform; }
-.floaters::before {
-  content: ""; position: absolute; inset: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, .13) 1.5px, transparent 1.6px);
-  background-size: 44px 44px;
-  animation: dots 30s linear infinite;
-}
-/* Live-data tools: small bits */
-.result ol.list { padding-left: 24px; }
-@media (prefers-reduced-motion: reduce) { .floaters span, .floaters::before { animation: none; } }
+.back:hover, .back:focus-visible { background: var(--ink); color: var(--paper); outline: none; }
+.logo.small { font-size: clamp(1.5rem, 6vw, 2rem); text-decoration: none; margin-top: 14px; padding: 7px 18px 7px 30px; }
+.logo.small::before { width: 11px; height: 11px; left: 11px; }
+header.mini { text-align: center; padding: 12px 0 24px; }
+
+footer { text-align: center; margin-top: 40px; color: var(--ink-soft); font-weight: 500; font-size: .92rem; }
