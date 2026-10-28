@@ -1,11 +1,6 @@
-/* ============================================================
-   JUST FOR FUN TOOLS
-   Each tool = one object: id, card text, search keywords, panel HTML,
-   and init() which runs once, the first time the tool is opened.
-   To add a tool: copy a block, change the id, html and init code.
-   ============================================================ */
+// just for fun
 
-/* ---------- DICE TUMBLER ---------- */
+// dice tumbler
 (window.TOOLS ||= []).push({
   id: "dice", title: "Dice Tumbler", emoji: "🎲",
   desc: "Roll dice of any size, or flip a coin.",
@@ -44,7 +39,7 @@
   }
 });
 
-/* ---------- NAME PICKER ---------- */
+// name picker
 (window.TOOLS ||= []).push({
   id: "picker", title: "Name Picker", emoji: "🎯",
   desc: "Pick a random name, or split a list into teams.",
