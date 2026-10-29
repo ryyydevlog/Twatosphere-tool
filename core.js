@@ -8,7 +8,6 @@ function secureInt(max) {
   do { crypto.getRandomValues(a); } while (a[0] >= limit);
   return a[0] % max;
 }
-const pick = (list) => list[secureInt(list.length)];
 
 async function copyText(text, btn) {
   const old = btn.textContent;

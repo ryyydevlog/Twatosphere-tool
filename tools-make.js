@@ -3,26 +3,161 @@
 // qr maker
 (window.TOOLS ||= []).push({
   id: "qr", title: "QR Maker", emoji: "🔳",
-  desc: "Turn any text or link into a scannable square.",
-  cat: "make", kw: "code link scan url download",
+  desc: "Turn text, links, Wi-Fi details, contacts or small files into a scannable square.",
+  cat: "make", kw: "code link scan url download file txt vcf contact text wifi network password card split",
   html: `
-<h2>QR Maker</h2><p class="hint">Type a link or any text. The code updates as you type.</p>
-<label for="qr-text">Text or link</label><input type="text" id="qr-text" value="https://example.com">
-<label for="qr-size">Size</label><select id="qr-size"><option value="180">Small</option><option value="260" selected>Medium</option><option value="360">Large</option></select>
+<h2>QR Maker</h2><p class="hint">Make a code for a link, text, Wi-Fi network, contact card or small file. Everything stays on your device.</p>
+<div class="hint" id="qr-cap-note" style="border:2px dashed var(--ink);border-radius:8px;padding:10px 14px;background:var(--receipt)">
+<b>How much fits?</b> One QR code holds about <b>2.9 KB</b> at most, roughly 2,900 plain English characters.
+<ul class="list" style="margin:6px 0 0">
+<li>Higher error correction survives smudges but holds less: Low 2,953 · Medium 2,331 · Quartile 1,663 · High 1,273 bytes.</li>
+<li>Accented letters take 2 bytes, most Asian scripts 3, emoji 4.</li>
+<li>A text file too big for one code is split into numbered codes (up to 30, about 29 KB in total).</li>
+<li>Photos, PDFs and other binary files do not fit.</li>
+</ul></div>
+
+<label for="qr-mode">What is it for?</label>
+<select id="qr-mode"><option value="text">Text or link</option><option value="wifi">Wi-Fi network</option><option value="vcard">Contact card</option><option value="file">Small file</option></select>
+
+<div id="qr-p-text">
+<label for="qr-text">Text or link</label><textarea id="qr-text" style="min-height:90px">https://example.com</textarea>
+</div>
+
+<div id="qr-p-file" hidden>
+<label for="qr-file">Choose a text-based file</label><input type="file" id="qr-file">
+<p class="hint" id="qr-file-note" style="margin:6px 0 0" aria-live="polite">Works with .txt, .vcf, .ics, .csv, .json, .md and other plain-text files, up to about 29 KB. If it does not fit in one code, it is split into numbered codes. Scan them in order; each one starts with a tag like [1/3].</p>
+</div>
+
+<div id="qr-p-wifi" hidden>
+<label for="qr-w-ssid">Network name (SSID)</label><input type="text" id="qr-w-ssid" autocomplete="off">
+<label for="qr-w-pass">Password</label><input type="text" id="qr-w-pass" autocomplete="off">
+<label for="qr-w-sec">Security</label><select id="qr-w-sec"><option value="WPA" selected>WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">None (open network)</option></select>
+<div class="opts"><label><input type="checkbox" id="qr-w-hidden"> Hidden network</label></div>
+</div>
+
+<div id="qr-p-vcard" hidden>
+<label for="qr-v-first">First name</label><input type="text" id="qr-v-first" autocomplete="off">
+<label for="qr-v-last">Last name</label><input type="text" id="qr-v-last" autocomplete="off">
+<label for="qr-v-org">Company</label><input type="text" id="qr-v-org" autocomplete="off">
+<label for="qr-v-tel">Phone</label><input type="text" id="qr-v-tel" placeholder="+60 12-345 6789" autocomplete="off">
+<label for="qr-v-email">Email</label><input type="text" id="qr-v-email" autocomplete="off">
+<label for="qr-v-url">Website</label><input type="text" id="qr-v-url" autocomplete="off">
+</div>
+
+<label for="qr-ec">Error correction</label><select id="qr-ec"><option value="M" selected>Medium (default)</option><option value="L">Low (fits the most data)</option><option value="Q">Quartile</option><option value="H">High (survives smudges)</option></select>
+<label for="qr-size">Size</label><select id="qr-size"><option value="180">Small</option><option value="260" selected>Medium</option><option value="360">Large</option><option value="640">Huge (for dense codes)</option></select>
 <div class="row"><button class="btn" id="qr-go">Make my QR</button><button class="btn alt" id="qr-dl" disabled>Download PNG</button></div>
+<p class="hint" id="qr-info" style="margin-top:10px" aria-live="polite"></p>
+<div class="row" id="qr-nav" hidden><button class="btn alt" id="qr-prev">← Previous</button><span class="big" id="qr-page" aria-live="polite" style="align-self:center"></span><button class="btn alt" id="qr-next">Next →</button></div>
 <div class="result center" id="qr-out" aria-live="polite"></div>
   `,
   init() {
+    /* Max bytes one QR code can hold (version 40, byte mode) for each error-correction level */
+    const CAP = { L: 2953, M: 2331, Q: 1663, H: 1273 };
+    const PART = 1000;                                  // bytes of file text per code when a file is split (keeps each code easy to scan)
+    const MAX_PARTS = 30, MAX_FILE = 29000;
+    const bytesOf = (t) => new TextEncoder().encode(t).length;
+    const val = (id) => $(id).value.trim();
+    let fileText = "", fileName = "", parts = [], idx = 0;
+
+    /* Build the text that goes into the code, depending on the chosen mode */
+    const escWifi = (s) => s.replace(/([\\;,:"])/g, "\\$1");
+    const escV = (s) => s.replace(/([\\;,])/g, "\\$1").replace(/\r?\n/g, "\\n");
+    function payload() {
+      const mode = $("qr-mode").value;
+      if (mode === "file") return fileText;
+      if (mode === "wifi") {
+        const ssid = val("qr-w-ssid"), sec = $("qr-w-sec").value;
+        if (!ssid) return "";
+        return "WIFI:T:" + sec + ";S:" + escWifi(ssid) + ";" + (sec === "nopass" ? "" : "P:" + escWifi($("qr-w-pass").value) + ";") + ($("qr-w-hidden").checked ? "H:true;" : "") + ";";
+      }
+      if (mode === "vcard") {
+        const first = val("qr-v-first"), last = val("qr-v-last"), org = val("qr-v-org"), tel = val("qr-v-tel"), email = val("qr-v-email"), url = val("qr-v-url");
+        if (!(first || last || org || tel || email || url)) return "";
+        const lines = ["BEGIN:VCARD", "VERSION:3.0", "N:" + escV(last) + ";" + escV(first) + ";;;", "FN:" + escV([first, last].filter(Boolean).join(" ") || org || tel || email)];
+        if (org) lines.push("ORG:" + escV(org));
+        if (tel) lines.push("TEL;TYPE=CELL:" + escV(tel));
+        if (email) lines.push("EMAIL:" + escV(email));
+        if (url) lines.push("URL:" + escV(url));
+        lines.push("END:VCARD");
+        return lines.join("\r\n");
+      }
+      return val("qr-text");
+    }
+    const EMPTY = { text: "Type something first.", wifi: "Enter the network name first.", vcard: "Fill in at least one field first.", file: "Choose a file first." };
+
+    /* Cut text into pieces of at most PART bytes (never in the middle of a character) and tag each one [1/3] */
+    function split(text) {
+      const out = []; let cur = "", curB = 0;
+      for (const ch of text) {
+        const b = bytesOf(ch);
+        if (curB + b > PART) { out.push(cur); cur = ""; curB = 0; }
+        cur += ch; curB += b;
+      }
+      if (cur) out.push(cur);
+      return out.map((p, i) => "[" + (i + 1) + "/" + out.length + "]\n" + p);
+    }
+
     function make() {
-      const text = $("qr-text").value.trim(), box = $("qr-out"), s = +$("qr-size").value;
-      $("qr-dl").disabled = true;
-      if (!text) { box.textContent = "Type something first."; return; }
-      if (typeof QRCode === "undefined") { box.textContent = "The QR library did not load. Check your connection and reload."; return; }
+      const mode = $("qr-mode").value, text = payload(), box = $("qr-out"), ec = $("qr-ec").value;
+      $("qr-dl").disabled = true; $("qr-info").textContent = ""; $("qr-nav").hidden = true; parts = [];
+      if (!text.trim()) { box.textContent = EMPTY[mode]; return; }
+      const n = bytesOf(text);
+      if (n <= CAP[ec]) {
+        parts = [text];
+        $("qr-info").textContent = n + " of " + CAP[ec] + " bytes used." + (n > 700 ? " Dense code: use a big size and scan it from a screen." : "");
+      } else if (mode === "file" && n <= MAX_FILE) {
+        parts = split(text);
+        $("qr-info").textContent = n + " bytes is too much for one code, so it is split into " + parts.length + " codes. Scan them in order; each starts with a tag like [1/" + parts.length + "].";
+      } else {
+        box.textContent = "Too much data for one QR code (" + n + " bytes, limit " + CAP[ec] + " at this error-correction level)." + (mode === "file" ? " Files can be up to about 29 KB." : ec !== "L" ? " Try Low error correction, or shorten the text." : " Shorten the text.");
+        return;
+      }
+      if (typeof QRCode === "undefined") { box.textContent = "The QR library did not load. Check your connection and reload."; parts = []; return; }
+      idx = Math.min(idx, parts.length - 1);
+      draw();
+    }
+
+    /* Draw the code for parts[idx] */
+    function draw() {
+      const box = $("qr-out"), s = +$("qr-size").value;
       box.innerHTML = "";
-      try { new QRCode(box, { text, width: s, height: s, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); }
+      try { new QRCode(box, { text: parts[idx], width: s, height: s, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel[$("qr-ec").value] }); }
       catch (e) { box.textContent = "That is too long for a QR code. Shorten it a bit."; return; }
       $("qr-dl").disabled = false;
+      $("qr-nav").hidden = parts.length < 2;
+      $("qr-page").textContent = "Code " + (idx + 1) + " of " + parts.length;
+      $("qr-prev").disabled = idx === 0; $("qr-next").disabled = idx === parts.length - 1;
     }
+
+    /* Show only the form for the chosen mode */
+    function syncMode() {
+      const mode = $("qr-mode").value;
+      ["text", "file", "wifi", "vcard"].forEach((m) => { $("qr-p-" + m).hidden = m !== mode; });
+      $("qr-w-pass").disabled = $("qr-w-sec").value === "nopass";
+      idx = 0;
+      make();
+    }
+
+    /* Read a small text-based file (locally, never uploaded) */
+    async function loadFile() {
+      const f = $("qr-file").files[0], note = $("qr-file-note");
+      if (!f) return;
+      const reject = (msg) => { note.textContent = msg; $("qr-file").value = ""; fileText = ""; fileName = ""; idx = 0; make(); };
+      if (f.size > MAX_FILE) { reject(f.name + " is " + (f.size / 1024).toFixed(1) + " KB. The limit is about 29 KB (30 codes), so this file is too big."); return; }
+      let t;
+      try { t = await f.text(); } catch (e) { reject("That file could not be read."); return; }
+      if (/[\u0000\uFFFD]/.test(t)) { reject(f.name + " looks like a binary file (image, PDF, zip…). Only text-based files can go into a QR code."); return; }
+      if (!t.trim()) { reject(f.name + " is empty."); return; }
+      fileText = t; fileName = f.name; idx = 0;
+      const n = bytesOf(t);
+      if (n > CAP.M && n <= CAP.L) $("qr-ec").value = "L";   // fits one code only at the roomiest setting
+      if (n > CAP.L) { if ($("qr-ec").value === "H") $("qr-ec").value = "M"; if (+$("qr-size").value < 360) $("qr-size").value = "360"; }
+      else if (n > 600) $("qr-size").value = "640";          // dense single codes need bigger squares to scan
+      note.textContent = "Loaded " + f.name + " (" + n + " bytes). Scanning the code shows the file's text.";
+      make();
+    }
+
     /* Download adds a white border, because scanners need a quiet zone around the code */
     $("qr-dl").onclick = () => {
       const el = $("qr-out").querySelector("canvas") || $("qr-out").querySelector("img");
@@ -31,12 +166,18 @@
       c.width = c.height = s + pad * 2;
       const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
       x.drawImage(el, pad, pad, s, s);
-      download(c.toDataURL("image/png"), "qr-code.png");
+      download(c.toDataURL("image/png"), parts.length > 1 ? "qr-code-" + (idx + 1) + "-of-" + parts.length + ".png" : "qr-code.png");
     };
+    $("qr-prev").onclick = () => { if (idx > 0) { idx--; draw(); } };
+    $("qr-next").onclick = () => { if (idx < parts.length - 1) { idx++; draw(); } };
     $("qr-go").onclick = make;
-    $("qr-text").addEventListener("input", make);
+    $("qr-mode").addEventListener("change", syncMode);
+    $("qr-w-sec").addEventListener("change", syncMode);
+    ["qr-text", "qr-p-wifi", "qr-p-vcard"].forEach((id) => $(id).addEventListener("input", make));
     $("qr-size").addEventListener("change", make);
-    make();
+    $("qr-ec").addEventListener("change", make);
+    $("qr-file").addEventListener("change", loadFile);
+    syncMode();
   }
 });
 
