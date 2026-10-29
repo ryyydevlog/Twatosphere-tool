@@ -1,11 +1,6 @@
-/* ============================================================
-   CONVERT TOOLS: things that transform what you give them
-   Each tool = one object: id, card text, search keywords, panel HTML,
-   and init() which runs once, the first time the tool is opened.
-   To add a tool: copy a block, change the id, html and init code.
-   ============================================================ */
+// convert: tools that transform whatever you give them
 
-/* ---------- IMAGE FLIPPER ---------- */
+// image flipper
 (window.TOOLS ||= []).push({
   id: "img", title: "Image Flipper", emoji: "🖼️",
   desc: "Convert PNG, JPG and WebP without uploading anywhere.",
@@ -59,7 +54,7 @@
   }
 });
 
-/* ---------- WORD COUNTER ---------- */
+// word counter
 (window.TOOLS ||= []).push({
   id: "words", title: "Word Counter", emoji: "📏",
   desc: "Words, letters, sentences, reading time and top words.",
@@ -93,7 +88,7 @@
   }
 });
 
-/* ---------- CASE CONVERTER ---------- */
+// case converter
 (window.TOOLS ||= []).push({
   id: "case", title: "Case Converter", emoji: "🔠",
   desc: "UPPER, lower, Title, camelCase, snake_case and more.",

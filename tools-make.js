@@ -1,11 +1,6 @@
-/* ============================================================
-   MAKE TOOLS: things that generate something for you
-   Each tool = one object: id, card text, search keywords, panel HTML,
-   and init() which runs once, the first time the tool is opened.
-   To add a tool: copy a block, change the id, html and init code.
-   ============================================================ */
+// make: tools that generate something for you
 
-/* ---------- QR MAKER ---------- */
+// qr maker
 (window.TOOLS ||= []).push({
   id: "qr", title: "QR Maker", emoji: "🔳",
   desc: "Turn any text or link into a scannable square.",
@@ -45,7 +40,7 @@
   }
 });
 
-/* ---------- PASSWORD BLENDER ---------- */
+// password blender
 (window.TOOLS ||= []).push({
   id: "pass", title: "Password Blender", emoji: "🔐",
   desc: "Strong random passwords, made on your device.",
@@ -84,7 +79,7 @@
   }
 });
 
-/* ---------- PALETTE ROULETTE ---------- */
+// palette roulette
 (window.TOOLS ||= []).push({
   id: "palette", title: "Palette Roulette", emoji: "🎨",
   desc: "Five random colors. Lock favorites, copy hex codes.",
@@ -132,7 +127,7 @@
   }
 });
 
-/* ---------- FOCUS TIMER ---------- */
+// focus timer
 (window.TOOLS ||= []).push({
   id: "timer", title: "Focus Timer", emoji: "⏱️",
   desc: "A simple countdown with presets and a beep.",

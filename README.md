@@ -7,7 +7,7 @@ Small browser tools. No build step, no server: open `index.html` and it works. M
 | File | What it does |
 | --- | --- |
 | `index.html` | Page shell: header, search, category chips, empty grid and an empty workbench |
-| `style.css` | All styling. Colors are CSS variables at the top (black and white theme, slow background drift, respects reduced-motion) |
+| `style.css` | All styling. Colors are CSS variables at the top (kraft-paper theme, one accent per tool category, respects reduced-motion) |
 | `core.js` | Shared helpers (`$`, `secureInt`, `pick`, `copyText`, `download`), builds cards and panels from the tools, router, search and filters |
 | `tools-api.js` | Live tools that call free public APIs: Weather Peek, Money Swapper, Word Detective, Country Cards, Dog Finder |
 | `tools-make.js` | QR Maker, Password Blender, Palette Roulette, Focus Timer |

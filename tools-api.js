@@ -1,13 +1,5 @@
-/* ============================================================
-   LIVE TOOLS: these call free public APIs (no account or key needed).
-   Unlike the other tools, what you search for is sent to that service.
-     Weather   -> Open-Meteo        https://open-meteo.com
-     Currency  -> Frankfurter       https://frankfurter.dev   (European Central Bank rates)
-     Words     -> Free Dictionary   https://dictionaryapi.dev
-     Countries -> REST Countries    https://restcountries.com
-     Dogs      -> Dog CEO           https://dog.ceo
-   Same shape as every other tool: id, card text, keywords, html, init().
-   ============================================================ */
+// live tools: call free public APIs (no key needed). what you type gets sent to that service.
+// weather -> open-meteo, currency -> frankfurter, words -> dictionaryapi.dev, countries -> restcountries, dogs -> dog.ceo
 
 /* Fetch JSON; throws an Error with .status set when the server says no (404 etc.) */
 async function apiGet(url) {
@@ -24,7 +16,7 @@ function mk(tag, cls, text) {
 }
 const NET_ERR = "Could not reach the service. Check your connection and try again.";
 
-/* ---------- WEATHER PEEK ---------- */
+// weather peek
 (window.TOOLS ||= []).push({
   id: "weather", title: "Weather Peek", emoji: "⛅",
   desc: "Current weather and a 5-day forecast for any city.",
@@ -81,7 +73,7 @@ const NET_ERR = "Could not reach the service. Check your connection and try agai
   }
 });
 
-/* ---------- MONEY SWAPPER ---------- */
+// money swapper
 (window.TOOLS ||= []).push({
   id: "money", title: "Money Swapper", emoji: "💱",
   desc: "Convert between 30+ currencies with daily bank rates.",
@@ -129,7 +121,7 @@ const NET_ERR = "Could not reach the service. Check your connection and try agai
   }
 });
 
-/* ---------- WORD DETECTIVE ---------- */
+// word detective
 (window.TOOLS ||= []).push({
   id: "define", title: "Word Detective", emoji: "📖",
   desc: "Look up meanings, examples and pronunciation of English words.",
@@ -173,7 +165,7 @@ const NET_ERR = "Could not reach the service. Check your connection and try agai
   }
 });
 
-/* ---------- COUNTRY CARDS ---------- */
+// country cards
 (window.TOOLS ||= []).push({
   id: "country", title: "Country Cards", emoji: "🌍",
   desc: "Flag, capital, population, languages and currency.",
@@ -217,7 +209,7 @@ const NET_ERR = "Could not reach the service. Check your connection and try agai
   }
 });
 
-/* ---------- DOG FINDER ---------- */
+// dog finder
 (window.TOOLS ||= []).push({
   id: "dog", title: "Dog Finder", emoji: "🐶",
   desc: "A random dog photo, any breed or one you pick.",
