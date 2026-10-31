@@ -94,15 +94,17 @@ header { text-align: center; padding: 30px 0 6px; }
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--paper); border: 1.5px solid var(--ink);
 }
-.tool-card:nth-child(3n+1) { transform: rotate(-.5deg); }
-.tool-card:nth-child(3n+2) { transform: rotate(.4deg); }
-.tool-card:nth-child(3n)   { transform: rotate(-.2deg); }
-.tool-card:hover, .tool-card:focus-visible { transform: rotate(0); box-shadow: var(--shadow); outline: none; }
+.card-wrap { position: relative; }
+.card-wrap:nth-child(3n+1) .tool-card { transform: rotate(-.5deg); }
+.card-wrap:nth-child(3n+2) .tool-card { transform: rotate(.4deg); }
+.card-wrap:nth-child(3n)   .tool-card { transform: rotate(-.2deg); }
+.card-wrap .tool-card:hover, .card-wrap .tool-card:focus-visible { transform: rotate(0); box-shadow: var(--shadow); outline: none; }
+.card-wrap .tool-card:focus-visible { outline: 3px solid var(--convert); outline-offset: 3px; }
 
-.tool-card.cat-make    { --c: var(--make); }
-.tool-card.cat-convert { --c: var(--convert); }
-.tool-card.cat-fun     { --c: var(--fun); }
-.tool-card.cat-api     { --c: var(--live); }
+.card-wrap.cat-make, .tool-card.cat-make       { --c: var(--make); }
+.card-wrap.cat-convert, .tool-card.cat-convert { --c: var(--convert); }
+.card-wrap.cat-fun, .tool-card.cat-fun         { --c: var(--fun); }
+.card-wrap.cat-api, .tool-card.cat-api         { --c: var(--live); }
 
 .tool-card .emoji {
   display: grid; place-items: center; width: 46px; height: 46px;
@@ -255,3 +257,128 @@ a.tool-card { display: block; text-decoration: none; }
 header.mini { text-align: center; padding: 12px 0 24px; }
 
 footer { text-align: center; margin-top: 40px; color: var(--ink-soft); font-weight: 500; font-size: .92rem; }
+
+/* make the hidden attribute always win, even on elements that set display (.row, .stats ...) */
+[hidden] { display: none !important; }
+input[type="color"] { width: 56px; height: 46px; padding: 2px; border: 2px solid var(--ink); border-radius: 6px; background: var(--receipt); cursor: pointer; }
+
+/* ---- pinned tools ---- */
+.pin {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  width: 44px; height: 44px; display: grid; place-items: center; padding: 0;
+  font: inherit; font-size: 1.35rem; line-height: 1; cursor: pointer;
+  color: var(--ink-soft); background: var(--paper); border: 2px solid var(--ink); border-radius: 50%;
+}
+.pin:hover { color: var(--ink); background: var(--receipt); }
+.pin[aria-pressed="true"] { color: var(--paper); background: var(--c, var(--ink)); }
+.pin:focus-visible { outline: 3px solid var(--convert); outline-offset: 2px; }
+.chip[data-cat="pinned"] { border-color: #8a6410; }
+.chip[data-cat="pinned"][aria-pressed="true"] { background: #8a6410; border-color: #8a6410; }
+button.back { font-size: 1.1rem; cursor: pointer; margin-left: 6px; }
+button.back[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+/* ---- hopeful note (top left of the home page / screen) ---- */
+.note {
+  position: relative; 
+  max-width: 400px; 
+  margin: 14px 18px 0; 
+  padding: 20px 22px 10px; 
+  text-align: left;
+  background: var(--receipt);  
+  border: 2px solid var(--ink); 
+  border-radius: 4px; 
+  box-shadow: var(--shadow-soft); 
+  transform: rotate(-.7deg);
+  z-index: 10; 
+}
+
+/* Desktop Styling: Pins cleanly to the top-left corner of the browser window */
+@media (min-width: 1200px) {
+  .note {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    margin: 0;
+    width: 320px;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 768px) {
+  .note {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    margin: 0;
+    width: 280px;
+  }
+}
+
+/* Rest of your existing CSS remains the same */
+.note::before {
+  content: ""; position: absolute; top: -13px; left: 26px; width: 92px; height: 26px;
+  background: rgba(226, 213, 180, .85); border: 1.5px solid rgba(35, 39, 31, .25); transform: rotate(-3deg);
+}
+.note-title { margin: 0; font-family: "IBM Plex Mono", monospace; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.note-text { margin: 8px 0 4px; font-size: 1.12rem; line-height: 1.45; font-weight: 600; }
+.note-btn {
+  font: inherit; font-size: .9rem; font-weight: 600; color: var(--ink-soft); background: transparent;
+  border: 0; border-radius: 6px; padding: 6px 0; cursor: pointer; text-decoration: underline;
+}
+.note-btn:hover { color: var(--ink); }
+.note-btn:focus-visible { outline: 3px solid var(--convert); outline-offset: 2px; }
+
+/* ================= phones and touch screens ================= */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { overflow-x: hidden; -webkit-tap-highlight-color: rgba(35, 39, 31, .12); }
+a, button, select, summary, label { touch-action: manipulation; }       /* no double-tap zoom delay */
+.wrap { padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
+
+/* finger-sized targets and no zoom-on-focus on iPhones (inputs must be 16px or more) */
+@media (pointer: coarse) {
+  .btn, .chip, .back, .note-btn { min-height: 44px; }
+  .btn { padding-top: 10px; padding-bottom: 10px; }
+  .chip { padding: 6px 16px; }
+  .back { display: inline-flex; align-items: center; }
+  .note-btn { display: inline-flex; align-items: center; }
+  input, select, textarea { font-size: 16px !important; }
+  input[type="text"], input[type="number"], input[type="search"], select { min-height: 44px; }
+  input[type="checkbox"] { width: 24px; height: 24px; flex: none; }
+  .opts label { min-height: 44px; }
+  input[type="range"] { height: 44px; }
+  .swatch button { min-height: 40px; }
+  .search input { min-height: 44px; }
+}
+
+@media (max-width: 600px) {
+  .wrap { padding-top: 14px; padding-bottom: 40px; padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); }
+  header { padding-top: 22px; }
+  .logo { padding: 8px 20px 8px 34px; }
+  .logo::before { left: 11px; width: 13px; height: 13px; }
+  .tagline { font-size: .98rem; margin-top: 16px; }
+  .note { max-width: none; margin: 4px 0 0; padding: 18px 16px 6px; width: auto !important; position: relative !important; top: auto !important; left: auto !important; }
+  .note-text { font-size: 1.05rem; }
+  .search { margin-top: 22px; padding: 2px 12px; }
+  .chips { gap: 8px; flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; white-space: nowrap; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
+  .tool-card { padding: 12px 10px 12px 20px; }
+  .tool-card .emoji { width: 40px; height: 40px; font-size: 1.35rem; }
+  .tool-card h3 { font-size: 1.12rem; line-height: 1.15; }
+  .tool-card p { font-size: .8rem; line-height: 1.4; }
+  .pin { top: 6px; right: 6px; }
+  .workbench { padding: 28px 14px 18px; }
+  .tool-panel h2 { font-size: 1.6rem; }
+  .row { gap: 8px; }
+  .row .btn { flex: 1 1 140px; }
+  .result { padding: 16px 12px 12px; }
+  .stats { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+  .timer { font-size: clamp(3rem, 20vw, 4.6rem); }
+  .back { font-size: 1rem; padding: 3px 12px; }
+}
+@media (max-width: 340px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .note, .tool-card { transform: none !important; }
+}

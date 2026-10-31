@@ -5,13 +5,25 @@
   <!-- viewport-fit=cover lets the page draw edge to edge on phones; safe-area padding in the CSS keeps text clear of notches -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Twatos Tools: silly tools that actually work</title>
+  <meta name="theme-color" content="#ece2c8">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-title" content="Twatos Tools">
   <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
   <link rel="stylesheet" href="style.css">
   <!-- QR code library (pinned version). Used only by the QR tool. -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+  <!-- Note placed directly in body for clean viewport absolute/fixed positioning -->
+  <aside class="note" id="note" aria-labelledby="note-title">
+    <p class="note-title" id="note-title">A little note for you</p>
+    <p class="note-text" id="note-text">You are doing better than you think.</p>
+    <button type="button" class="note-btn" id="note-next">Another note ↻</button>
+  </aside>
+
   <div class="floaters" aria-hidden="true">
     <span style="left:6%;top:18%">🧩</span>
     <span style="left:88%;top:12%">🎲</span>
@@ -27,31 +39,35 @@
 
     <!-- ===== HOME VIEW: search, chips and the tool grid (cards are filled in by core.js) ===== -->
     <div id="view-home">
-      <header>
-        <div class="logo">Twatos Tools</div>
-        <p class="tagline">A heap of small, slightly silly tools. Pick one, use it, forget we existed.</p>
-      </header>
-      <div class="search" role="search">
-        <span aria-hidden="true">🔍</span>
-        <input type="search" id="search" placeholder="Search tools: try “color” or “password”" aria-label="Search tools" autocomplete="off">
-        <kbd aria-hidden="true">/</kbd>
+      <div class="home-content">
+        <header>
+          <div class="logo">Twatos Tools</div>
+          <p class="tagline">A heap of small, slightly silly tools. Pick one, use it, forget we existed.</p>
+        </header>
+        <div class="search" role="search">
+          <span aria-hidden="true">🔍</span>
+          <input type="search" id="search" placeholder="Search, e.g. “qr” or “color”" aria-label="Search tools" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+          <kbd aria-hidden="true">/</kbd>
+        </div>
+        <div class="chips" id="chips">
+          <button class="chip" data-cat="all" aria-pressed="true">All</button>
+          <button class="chip" data-cat="pinned" aria-pressed="false">★ Pinned</button>
+          <button class="chip" data-cat="make" aria-pressed="false">Make</button>
+          <button class="chip" data-cat="convert" aria-pressed="false">Convert</button>
+          <button class="chip" data-cat="fun" aria-pressed="false">Just for fun</button>
+          <button class="chip" data-cat="api" aria-pressed="false">Live data</button>
+        </div>
+        <p class="count" id="count" aria-live="polite"></p>
+        <nav class="grid" id="grid" aria-label="Tools"></nav>
+        <p class="empty" id="empty" hidden>🫥 No tool matches that. Clear the search or try a shorter word.</p>
       </div>
-      <div class="chips" id="chips">
-        <button class="chip" data-cat="all" aria-pressed="true">All</button>
-        <button class="chip" data-cat="make" aria-pressed="false">Make</button>
-        <button class="chip" data-cat="convert" aria-pressed="false">Convert</button>
-        <button class="chip" data-cat="fun" aria-pressed="false">Just for fun</button>
-        <button class="chip" data-cat="api" aria-pressed="false">Live data</button>
-      </div>
-      <p class="count" id="count" aria-live="polite"></p>
-      <nav class="grid" id="grid" aria-label="Tools"></nav>
-      <p class="empty" id="empty" hidden>🫥 No tool matches that. Clear the search or try a shorter word.</p>
     </div>
 
     <!-- ===== TOOL VIEW: one tool panel is shown here at a time (panels are filled in by core.js) ===== -->
     <div id="view-tool" hidden>
       <header class="mini">
-        <a class="back" href="#">← All tools</a><br>
+        <a class="back" href="#">← All tools</a>
+        <button type="button" class="back" id="tool-pin" aria-pressed="false">☆ Pin this tool</button><br>
         <a class="logo small" href="#">Twatos Tools</a>
       </header>
       <main class="workbench" id="bench" tabindex="-1"></main>
@@ -65,6 +81,7 @@
   <script src="tools-convert.js"></script>
   <script src="tools-fun.js"></script>
   <script src="tools-api.js"></script>
+  <script src="notes.js"></script>
   <script src="core.js"></script>
 </body>
 </html>
