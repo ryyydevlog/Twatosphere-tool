@@ -1,10 +1,10 @@
-# Twatos Tools v2
+# Twatos Tools v2.1
 
 A heap of small, slightly silly tools that actually work. No build step, no server, no accounts: open `index.html` and go.
 
 25 tools in four categories: **Make**, **Convert**, **Just for fun** and **Live data**.
 
-## What's new in v2
+## What's new in v2.1
 
 - **New look.** A kraft-paper theme with one accent color per category, rotated "tag" cards, receipt-style results and a grain texture.
 - **New favicon.** A toolbox with four color swatches (`icon.png`).
