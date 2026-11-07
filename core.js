@@ -35,13 +35,16 @@ let pins = loadPins();
 const isPinned = (id) => pins.includes(id);
 
 // ---------- cards and panels ----------
+const CATS = { make: "Make", convert: "Convert", fun: "Just for fun", api: "Live data" };
+const pad = (n) => String(n + 1).padStart(2, "0");
 const wraps = {};                                         // tool id -> card wrapper (card link + pin button)
-tools.forEach((t) => {
+tools.forEach((t, i) => {
   const wrap = document.createElement("div");
   wrap.className = "card-wrap cat-" + t.cat; wrap.dataset.tool = t.id;
   const a = document.createElement("a");
   a.className = "tool-card cat-" + t.cat; a.href = "#" + t.id;
-  a.innerHTML = '<span class="emoji">' + t.emoji + "</span><h3>" + t.title + "</h3><p>" + t.desc + "</p>";
+  a.style.setProperty("--i", i);                          // staggers the pop-in animation
+  a.innerHTML = '<span class="cube"><b>' + t.emoji + "</b></span><h3>" + t.title + "</h3><p>" + t.desc + '</p><span class="catname">' + CATS[t.cat] + "</span>";
   const pin = document.createElement("button");
   pin.type = "button"; pin.className = "pin"; pin.textContent = "☆";
   pin.setAttribute("aria-label", "Pin " + t.title); pin.setAttribute("aria-pressed", "false");
@@ -78,16 +81,13 @@ function route() {
   const t = byId[location.hash.slice(1)];
   $("view-home").hidden = !!t;
   $("view-tool").hidden = !t;
-  
-  // Hide the hopeful note when using a tool, show it again on the home page
-  if ($("note")) $("note").hidden = !!t;
-
   tools.forEach((x) => { $("panel-" + x.id).hidden = x !== t; });
   document.title = t ? t.title + " | Twatos Tools" : "Twatos Tools: silly tools that actually work";
   if (!t) return;
   const card = wraps[t.id].querySelector(".tool-card");
   $("view-tool").style.setProperty("--c", getComputedStyle(card).getPropertyValue("--c"));
   $("view-tool").style.setProperty("--emoji", '"' + t.emoji + '"');
+  $("view-tool").style.setProperty("--tag", '"' + pad(tools.indexOf(t)) + " · " + CATS[t.cat] + '"');
   refreshPins();
   if (!t.ready) {
     t.ready = true;
@@ -155,6 +155,16 @@ document.addEventListener("keydown", (e) => {
   });
 })();
 
+// a soft flash when a result changes. skipped for the ticking timer and while you are typing in a box
+const flash = new MutationObserver((m) => {
+  const el = m[0].target.closest(".result");
+  if (!el || el.classList.contains("timer")) return;
+  if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+});
+document.querySelectorAll(".result").forEach((r) => flash.observe(r, { childList: true, characterData: true, subtree: true }));
+
 refreshPins();
 applyFilter();
 route();
+setTimeout(() => $("grid").classList.add("settled"), 1600);   // after the pop-in, stop it replaying when cards move or reappear

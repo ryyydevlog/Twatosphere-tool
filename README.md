@@ -1,12 +1,12 @@
-# Twatos Tools v2.1
+# Twatos Tools v2
 
 A heap of small, slightly silly tools that actually work. No build step, no server, no accounts: open `index.html` and go.
 
 25 tools in four categories: **Make**, **Convert**, **Just for fun** and **Live data**.
 
-## What's new in v2.1
+## What's new in v2
 
-- **New look.** A kraft-paper theme with one accent color per category, rotated "tag" cards, receipt-style results and a grain texture.
+- **New look.** A cardboard-box theme with pixel headings (Pixelify Sans), Nunito body text, isometric cube icons, taped cards, hard offset shadows, one accent color per category and bouncy motion that stops when "reduce motion" is on. Visual style by RedbowD, merged into this version.
 - **New favicon.** A toolbox with four color swatches (`icon.png`).
 - **A little note for you.** A taped-paper box at the top left of the home page shows a different hopeful note every time the page opens or reloads (never the same one twice in a row), with an "Another note" button. The notes live in `notes.js`, one per line, so you can add your own.
 - **Pinned tools.** Tap the star on any card (or **Pin this tool** inside a tool) to keep it at the front of the grid. A **★ Pinned** filter shows only your pins. Pins are saved in your browser only and sync between open tabs.
@@ -120,7 +120,7 @@ Most tools run entirely in your browser and send nothing anywhere. Only the five
 | File | What it does |
 | --- | --- |
 | `index.html` | Page shell: header, search, category chips, empty grid and an empty workbench |
-| `style.css` | All styling. Colors are CSS variables at the top (kraft-paper theme, one accent per tool category) |
+| `style.css` | All styling. Colors are CSS variables at the top (cardboard theme, one accent per tool category), plus the pin button, hope note and phone rules |
 | `core.js` | Shared helpers (`$`, `secureInt`, `copyText`, `download`), builds cards and panels from the tools, router, search and filters, pinned tools and the daily note |
 | `notes.js` | The list of hopeful notes (`window.NOTES`), easy to edit |
 | `icon.png` | Favicon |
