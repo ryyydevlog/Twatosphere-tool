@@ -5,70 +5,59 @@
   <!-- viewport-fit=cover lets the page draw edge to edge on phones; safe-area padding in the CSS keeps text clear of notches -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Twatos Tools: silly tools that actually work</title>
-  <meta name="theme-color" content="#ece2c8">
+  <meta name="theme-color" content="#e9dcc0">
   <meta name="color-scheme" content="light">
   <meta name="apple-mobile-web-app-title" content="Twatos Tools">
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;600;700&family=Nunito:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
   <link rel="stylesheet" href="style.css">
   <!-- QR code library (pinned version). Used only by the QR tool. -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-  <!-- Note placed directly in body for clean viewport absolute/fixed positioning -->
-  <aside class="note" id="note" aria-labelledby="note-title">
-    <p class="note-title" id="note-title">A little note for you</p>
-    <p class="note-text" id="note-text">You are doing better than you think.</p>
-    <button type="button" class="note-btn" id="note-next">Another note ↻</button>
-  </aside>
-
-  <div class="floaters" aria-hidden="true">
-    <span style="left:6%;top:18%">🧩</span>
-    <span style="left:88%;top:12%">🎲</span>
-    <span style="left:78%;top:70%">✨</span>
-    <span style="left:10%;top:76%">🔧</span>
-    <span style="left:50%;top:92%">🍕</span>
-    <span style="left:30%;top:8%">🌍</span>
-    <span style="left:92%;top:42%">⛅</span>
-    <span style="left:3%;top:48%">💱</span>
-    <span style="left:66%;top:88%">🐶</span>
-  </div>
+  <div class="floaters" aria-hidden="true"><span style="left:6%;top:20%"></span><span style="left:90%;top:14%;animation-delay:-2s"></span><span style="left:80%;top:72%;animation-delay:-4s"></span><span style="left:8%;top:78%;animation-delay:-1s"></span><span style="left:48%;top:93%;animation-delay:-3s"></span><span style="left:94%;top:44%;animation-delay:-5s"></span></div>
   <div class="wrap">
 
     <!-- ===== HOME VIEW: search, chips and the tool grid (cards are filled in by core.js) ===== -->
     <div id="view-home">
-      <div class="home-content">
-        <header>
-          <div class="logo">Twatos Tools</div>
-          <p class="tagline">A heap of small, slightly silly tools. Pick one, use it, forget we existed.</p>
-        </header>
-        <div class="search" role="search">
-          <span aria-hidden="true">🔍</span>
-          <input type="search" id="search" placeholder="Search, e.g. “qr” or “color”" aria-label="Search tools" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
-          <kbd aria-hidden="true">/</kbd>
-        </div>
-        <div class="chips" id="chips">
-          <button class="chip" data-cat="all" aria-pressed="true">All</button>
-          <button class="chip" data-cat="pinned" aria-pressed="false">★ Pinned</button>
-          <button class="chip" data-cat="make" aria-pressed="false">Make</button>
-          <button class="chip" data-cat="convert" aria-pressed="false">Convert</button>
-          <button class="chip" data-cat="fun" aria-pressed="false">Just for fun</button>
-          <button class="chip" data-cat="api" aria-pressed="false">Live data</button>
-        </div>
-        <p class="count" id="count" aria-live="polite"></p>
-        <nav class="grid" id="grid" aria-label="Tools"></nav>
-        <p class="empty" id="empty" hidden>🫥 No tool matches that. Clear the search or try a shorter word.</p>
+      <aside class="note" id="note" aria-labelledby="note-title">
+        <p class="note-title" id="note-title">A little note for you</p>
+        <p class="note-text" id="note-text">You are doing better than you think.</p>
+        <button type="button" class="note-btn" id="note-next">Another note ↻</button>
+      </aside>
+      <header class="hero">
+        <p class="eyebrow">Open the box · pick a tool · no sign-up</p>
+        <h1 class="logo"><span class="cube" aria-hidden="true"></span>Twatos Tools</h1>
+        <p class="tagline">A heap of small, slightly silly tools. Pick one, use it, forget we existed.</p>
+      </header>
+      <div class="search" role="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="search" placeholder="Search, e.g. “qr” or “color”" aria-label="Search tools" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+        <kbd aria-hidden="true">/</kbd>
       </div>
+      <div class="chips" id="chips">
+        <button class="chip" data-cat="all" aria-pressed="true">All</button>
+        <button class="chip" data-cat="pinned" aria-pressed="false">★ Pinned</button>
+        <button class="chip" data-cat="make" aria-pressed="false">Make</button>
+        <button class="chip" data-cat="convert" aria-pressed="false">Convert</button>
+        <button class="chip" data-cat="fun" aria-pressed="false">Just for fun</button>
+        <button class="chip" data-cat="api" aria-pressed="false">Live data</button>
+      </div>
+      <p class="count" id="count" aria-live="polite"></p>
+      <nav class="grid" id="grid" aria-label="Tools"></nav>
+      <p class="empty" id="empty" hidden>🫥 No tool matches that. Clear the search or try a shorter word.</p>
     </div>
 
     <!-- ===== TOOL VIEW: one tool panel is shown here at a time (panels are filled in by core.js) ===== -->
     <div id="view-tool" hidden>
       <header class="mini">
-        <a class="back" href="#">← All tools</a>
-        <button type="button" class="back" id="tool-pin" aria-pressed="false">☆ Pin this tool</button><br>
-        <a class="logo small" href="#">Twatos Tools</a>
+        <div class="mini-left">
+          <a class="back" href="#"><span aria-hidden="true">←</span> All tools</a>
+          <button type="button" class="back" id="tool-pin" aria-pressed="false">☆ Pin this tool</button>
+        </div>
+        <a class="logo small" href="#"><span class="cube" aria-hidden="true"></span>Twatos Tools</a>
       </header>
       <main class="workbench" id="bench" tabindex="-1"></main>
     </div>

@@ -123,7 +123,7 @@ Tacos</textarea>
       x.save(); x.translate(cx, cy);
       if (n < 2) {
         x.beginPath(); x.arc(0, 0, rad, 0, TAU); x.fillStyle = "#e2d5b4"; x.fill(); x.lineWidth = 3; x.strokeStyle = INK; x.stroke();
-        x.fillStyle = INK; x.font = '600 18px "Work Sans",system-ui,sans-serif'; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("Add 2 or more options", 0, 0);
+        x.fillStyle = INK; x.font = '600 18px "Nunito",system-ui,sans-serif'; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("Add 2 or more options", 0, 0);
       } else {
         const a = TAU / n;
         x.rotate(angle);
@@ -133,7 +133,7 @@ Tacos</textarea>
         }
         if (winner >= 0 && winner < n && !spinning) { x.beginPath(); x.moveTo(0, 0); x.arc(0, 0, rad, winner * a, (winner + 1) * a); x.closePath(); x.lineWidth = 5; x.strokeStyle = INK; x.stroke(); }
         const px = Math.max(10, Math.min(20, rad * a * 0.45)), maxW = rad - 54;
-        x.font = '600 ' + px + 'px "Work Sans",system-ui,sans-serif'; x.textAlign = "right"; x.textBaseline = "middle";
+        x.font = '600 ' + px + 'px "Nunito",system-ui,sans-serif'; x.textAlign = "right"; x.textBaseline = "middle";
         for (let i = 0; i < n; i++) {
           let t = opts[i];
           if (x.measureText(t).width > maxW) { while (t.length > 1 && x.measureText(t + "…").width > maxW) t = t.slice(0, -1); t += "…"; }
@@ -200,5 +200,6 @@ Tacos</textarea>
     try { new ResizeObserver(() => draw()).observe($("wheel-box")); } catch (e) { window.addEventListener("resize", draw); }
     window.addEventListener("hashchange", () => { if (location.hash === "#wheel") draw(); });
     draw();
+    try { document.fonts.ready.then(draw); } catch (e) { /* fonts API not available */ }
   }
 });

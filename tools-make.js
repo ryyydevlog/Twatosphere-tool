@@ -325,7 +325,7 @@
 <div class="result" id="contrast-out">
 <div class="big" id="contrast-ratio" aria-live="polite"></div>
 <div class="stats" id="contrast-stats"></div>
-<div id="contrast-sample" style="margin-top:14px;padding:16px;border:2px solid var(--ink);border-radius:8px;font-family:'Work Sans',system-ui,sans-serif">
+<div id="contrast-sample" style="margin-top:14px;padding:16px;border:2px solid var(--ink);border-radius:8px;font-family:'Nunito',system-ui,sans-serif">
 <div style="font-size:1.5rem;font-weight:700">Large text sample</div>
 <p style="margin:6px 0 0;font-size:1rem">Normal text sample: the quick brown fox jumps over the lazy dog.</p></div>
 <div id="contrast-fix" style="margin-top:12px"></div>
